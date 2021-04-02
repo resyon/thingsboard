@@ -50,7 +50,8 @@ export class HomeComponent extends PageComponent implements AfterViewInit, OnIni
   sidenavMode: 'over' | 'push' | 'side' = 'side';
   sidenavOpened = true;
 
-  logo = require('../../../assets/logo_title_white.svg').default;
+  // logo = require('../../../assets/logo_title_white.svg').default;
+  logo = require('../../../assets/logoyjy.png').default;
 
   @ViewChild('sidenav')
   sidenav: MatSidenav;
