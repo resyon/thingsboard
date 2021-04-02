@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 const forwardUrl = "http://localhost:8080";
+// const forwardUrl = "http://localhost:4200";
+// const devUrl = "http://localhost:4200"
 const wsForwardUrl = "ws://localhost:8080";
+// const wsForwardUrl = "ws://localhost:4200";
 const ruleNodeUiforwardUrl = forwardUrl;
 
 const PROXY_CONFIG = {

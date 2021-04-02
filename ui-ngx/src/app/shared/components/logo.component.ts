@@ -15,6 +15,7 @@
 ///
 
 import { Component } from '@angular/core';
+import { WINDOW_PROVIDERS } from '@app/core/public-api';
 
 @Component({
   selector: 'tb-logo',
@@ -23,10 +24,15 @@ import { Component } from '@angular/core';
 })
 export class LogoComponent {
 
-  logo = 'assets/logo_title_white.svg';
+  // logo = 'assets/logo_title_white.svg';
+  logo = 'assets/logoyjy.png';
 
-  gotoThingsboard(): void {
-    window.open('https://thingsboard.io', '_blank');
+  // gotoThingsboard(): void {
+  //   window.open('https://thingsboard.io', '_blank');
+  // }
+
+  gotoYjy(): void {
+    window.open('http://dig.sxu.edu.cn/', '_blank')
   }
 
 }
