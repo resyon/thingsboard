@@ -666,6 +666,7 @@
                         </execution>
                     </executions>
                 </plugin>
+		<!--
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
@@ -684,7 +685,8 @@
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>
+			</plugin>
+		-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -780,11 +782,13 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
+	<plugins>
+		<!--
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-            </plugin>
+			</plugin>
+		-->
         </plugins>
     </build>
 
