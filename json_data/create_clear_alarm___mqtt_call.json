@@ -1,0 +1,231 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Create/Clear Alarm & MQTT Call",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 258,
+          "layoutY": 402
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "add  serviceID to meta data",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "metadata.serviceID = msg.serviceID\nmetadata.temperature = msg.temperature;\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 313,
+          "layoutY": 722
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCReplyNode",
+        "name": "rpc test",
+        "debugMode": true,
+        "configuration": {
+          "requestIdMetaDataAttribute": "temperature"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": null,
+          "layoutX": 247,
+          "layoutY": 155
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Under Threshold",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.temperature < 0 || msg.temperature > 60;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": null,
+          "layoutX": 930,
+          "layoutY": 217
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Create Alarm",
+        "debugMode": true,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "Critical Temperature",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "relationTypes": null
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 579,
+          "layoutY": 59
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "Clear Alarm",
+        "debugMode": false,
+        "configuration": {
+          "alarmType": "Critical Temperature",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": null,
+          "layoutX": 630,
+          "layoutY": 218
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Add temperature to metadata",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "metadata.temperature = msg.temperature;\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": null,
+          "layoutX": 1229,
+          "layoutY": 219
+        },
+        "type": "org.thingsboard.rule.engine.mail.TbMsgToEmailNode",
+        "name": "Temperature Email",
+        "debugMode": true,
+        "configuration": {
+          "fromTemplate": "hirosakae7@yeah.net",
+          "toTemplate": "hirosakae7@gmail.com",
+          "ccTemplate": null,
+          "bccTemplate": null,
+          "subjectTemplate": "Device ${deviceType} temperature unacceptable",
+          "bodyTemplate": "Device ${deviceName} has unacceptable temperature: ${temperature}. "
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1531,
+          "layoutY": 220
+        },
+        "type": "org.thingsboard.rule.engine.mail.TbSendEmailNode",
+        "name": "SendGrid SMTP",
+        "debugMode": false,
+        "configuration": {
+          "useSystemSmtpSettings": true,
+          "smtpHost": "smtp.sendgrid.net",
+          "smtpPort": 25,
+          "username": "apikey",
+          "password": "YOUR_API_PASSWORD",
+          "smtpProtocol": "smtp",
+          "timeout": 10000,
+          "enableTls": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1025,
+          "layoutY": 523
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "rest call to calm down",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "http://localhost:51701/api/test",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": false,
+          "proxyScheme": null,
+          "proxyHost": null,
+          "proxyPort": 0,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 0,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "temperature": "${temperature}",
+            "type": "TEMP"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 778,
+          "layoutY": 655
+        },
+        "type": "org.thingsboard.rule.engine.mqtt.TbMqttNode",
+        "name": "mqtt test",
+        "debugMode": true,
+        "configuration": {
+          "topicPattern": "/test/resyon_test/${temperature}",
+          "host": "172.17.0.1",
+          "port": 1883,
+          "connectTimeoutSec": 10,
+          "clientId": "2d8a65e0-939f-11eb-97c9-31475b476566",
+          "cleanSession": false,
+          "ssl": false,
+          "credentials": {
+            "type": "anonymous"
+          }
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 4,
+        "type": "False"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 5,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 6,
+        "type": "Created"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 7,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
